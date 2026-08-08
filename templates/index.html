@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokemon</title>
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> -->
+    <link rel="stylesheet" href="../static/styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <h1>Pokémon</h1>
+
+      <div class="search-bar">
+        <input id="pokemon" type="text" placeholder="Buscar Pokémon" />
+        <button id="bton" type="button">Buscar</button>
+      </div>
+
+      <div class="actions">
+        <button id="comparate"  class="action-button" type="button">Pelea</button>
+      </div>
+
+      <div id="suggest" class="suggest"></div>
+
+      <div class="switch-container">
+        <div class="switch-track">
+          <input
+            type="radio"
+            id="pokemon1"
+            name="pokemon-choice"
+            value="pokemon1"
+            checked
+          />
+          <label class="switch-option switch-option-left" for="pokemon1"
+            >Pokémon 1</label
+          >
+          <input
+            type="radio"
+            id="pokemon2"
+            name="pokemon-choice"
+            value="pokemon2"
+          />
+          <label class="switch-option switch-option-right" for="pokemon2"
+            >Pokémon 2</label
+          >
+          <span class="switch-thumb"></span>
+        </div>
+      </div>
+
+      <div class="containers">
+        <section id="section1" class="pokemon-card blue-card"></section>
+        <section id="section2" class="pokemon-card red-card"></section>
+      </div>
+    </div>
+
+    <!-- <script>
+        const radios = document.querySelectorAll('input[name="pokemon-choice"]');
+        let opcionSeleccionada = 'pokemon1';
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    opcionSeleccionada = radio.value;
+                    console.log('Opción seleccionada:', opcionSeleccionada);
+                }
+            });
+        });
+
+        const botonBuscar = document.querySelector('.search-bar button');
+        const inputBuscar = document.querySelector('.search-bar input');
+
+        botonBuscar.addEventListener('click', () => {
+            const texto = inputBuscar.value;
+            console.log('Búsqueda:', texto);
+            console.log('Estado actual del switch:', opcionSeleccionada);
+        });
+    </script> -->
+
+    <script src="../static/script.js"></script>
+  </body>
+</html>
