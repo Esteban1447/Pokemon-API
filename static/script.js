@@ -1,8 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const section1 = document.getElementById("section1");
-  const section2 = document.getElementById("section2");
   const pokemon = document.getElementById("pokemon");
   const bton = document.getElementById("bton");
+  const createPokemon = document.getElementById("createSection");
   const radios = document.querySelectorAll('input[name="pokemon-choice"]');
   const suggest = document.getElementById("suggest");
   const btonComparate = document.getElementById("comparate");
@@ -32,6 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let selector = "1";
 
   let pokemonList = [];
+
+  let sections = {};
+
+  let contador = 0;
 
   async function loadPokemons() {
     const responce = await fetch(
@@ -70,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     found.forEach((name) => {
       const opcion = document.createElement("div");
-
       opcion.className = "opcion";
       opcion.textContent = name;
 
@@ -82,6 +84,18 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       suggest.appendChild(opcion);
     });
+  });
+
+  function createPokememonSection(contador) {
+    const container = document.getElementById("container");
+    const section = document.createElement("div");
+    section.id = `section${contador}`;
+    container.appendChild(section);
+  }
+
+  createPokemon.addEventListener("click", () => {
+    contador += 1;
+    createPokememonSection(contador);
   });
 
   function pokemonSe(pokemonSelect) {
@@ -149,92 +163,99 @@ document.addEventListener("DOMContentLoaded", () => {
 
     section.innerHTML = "";
 
-    orden.forEach((key) => {
-      const etiqueta = traducciones[key] || key;
-      const value = datos[key];
+    if (tasks.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "empty-state";
+      empty.textContent = "No hay tareas. Añade una tarea para empezar.";
+      taskList.appendChild(empty);
+    } else {
+      orden.forEach((key) => {
+        const etiqueta = traducciones[key] || key;
+        const value = datos[key];
 
-      //=========================
-      // IMAGEN
-      //=========================
+        //=========================
+        // IMAGEN
+        //=========================
 
-      if (key === "url_imagen") {
-        const image = document.createElement("img");
+        if (key === "url_imagen") {
+          const image = document.createElement("img");
 
-        image.className = "pokemon-image";
+          image.className = "pokemon-image";
 
-        image.src = value;
+          image.src = value;
 
-        image.alt = `${datos.name} image`;
+          image.alt = `${datos.name} image`;
 
-        section.appendChild(image);
-
-        return;
-      }
-
-      const text = document.createElement("span");
-
-      //=========================
-      // SI ES UN ARREGLO
-      //=========================
-
-      if (Array.isArray(value)) {
-        // Habilidades
-        if (key === "abilities") {
-          const skillsList = document.createElement("ul");
-
-          skillsList.className = "abilities-list";
-
-          datos.abilities.forEach((ability, i) => {
-            const item = document.createElement("li");
-
-            item.className = "ability-item";
-
-            item.textContent = `Habilidad ${i + 1}: ${ability.name.charAt(0).toUpperCase() + ability.name.slice(1)} ${ability.is_hidden ? "(hidden)" : ""}`;
-
-            skillsList.appendChild(item);
-          });
-
-          section.appendChild(skillsList);
+          section.appendChild(image);
 
           return;
         }
 
-        // Estadísticas
-        if (key === "stats") {
-          const statsList = document.createElement("ul");
+        const text = document.createElement("span");
 
-          statsList.className = "stats-list";
+        //=========================
+        // SI ES UN ARREGLO
+        //=========================
 
-          datos.stats.forEach((stats) => {
-            const item = document.createElement("li");
+        if (Array.isArray(value)) {
+          // Habilidades
+          if (key === "abilities") {
+            const skillsList = document.createElement("ul");
 
-            item.className = "stats-item";
+            skillsList.className = "abilities-list";
 
-            item.textContent = `${stats.name.charAt(0).toUpperCase() + stats.name.slice(1)}: ${stats.base_stat}`;
+            datos.abilities.forEach((ability, i) => {
+              const item = document.createElement("li");
 
-            stat.push({
-              id: selector,
-              name: stats.name,
-              stat: stats.base_stat,
+              item.className = "ability-item";
+
+              item.textContent = `Habilidad ${i + 1}: ${ability.name.charAt(0).toUpperCase() + ability.name.slice(1)} ${ability.is_hidden ? "(hidden)" : ""}`;
+
+              skillsList.appendChild(item);
             });
-            console.log(stat);
 
-            statsList.appendChild(item);
-          });
+            section.appendChild(skillsList);
 
-          section.appendChild(statsList);
+            return;
+          }
 
-          return;
+          // Estadísticas
+          if (key === "stats") {
+            const statsList = document.createElement("ul");
+
+            statsList.className = "stats-list";
+
+            datos.stats.forEach((stats) => {
+              const item = document.createElement("li");
+
+              item.className = "stats-item";
+
+              item.textContent = `${stats.name.charAt(0).toUpperCase() + stats.name.slice(1)}: ${stats.base_stat}`;
+
+              stat.push({
+                id: selector,
+                name: stats.name,
+                stat: stats.base_stat,
+              });
+              console.log(stat);
+
+              statsList.appendChild(item);
+            });
+
+            section.appendChild(statsList);
+
+            return;
+          }
+
+          // Tipos
+          text.textContent = `${etiqueta}: ${value.join(", ")}`;
+        } else {
+          // Datos normales
+          text.textContent = `${etiqueta}: ${value}`;
         }
-
-        // Tipos
-        text.textContent = `${etiqueta}: ${value.join(", ")}`;
-      } else {
-        // Datos normales
-        text.textContent = `${etiqueta}: ${value}`;
-      }
-      section.appendChild(text);
-    });
+        section.appendChild(text);
+      });
+    }
     pokemonSave[selector] = stat;
 
     btonComparate.addEventListener("click", comparatePokemons);

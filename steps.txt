@@ -1,0 +1,10 @@
+La logica sera
+
+en la variable crear los arreglos, luego se leen y por cada arreglo se dibujara en cada slot
+
+Lo que toca pensar ahora es que logica elegir
+
+1. Si se crean secciones en blanco y se añaden 
+2. Si por cada vez que añades un pokemon se crea una nueva seccion (Se necesitaria mejorar el borrado por que dependeria mucho la app de el)
+
+Si se opta por la opcion 2 tambien se necesitaria hacer un randomColor para representar a cada pokemon
