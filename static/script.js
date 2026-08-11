@@ -112,6 +112,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let pokemons = {
       name: nameP,
     };
+    createPokememonSection();
+    
 
     if (cache[nameP]) {
       console.log("Datos obtenidos de la caché.");
