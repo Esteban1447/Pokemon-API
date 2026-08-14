@@ -22,58 +22,13 @@
 
       <div id="suggest" class="suggest"></div>
 
-      <div class="switch-container">
-        <div class="switch-track">
-          <input
-            type="radio"
-            id="pokemon1"
-            name="pokemon-choice"
-            value="pokemon1"
-            checked
-          />
-          <label class="switch-option switch-option-left" for="pokemon1"
-            >Pokémon 1</label
-          >
-          <input
-            type="radio"
-            id="pokemon2"
-            name="pokemon-choice"
-            value="pokemon2"
-          />
-          <label class="switch-option switch-option-right" for="pokemon2"
-            >Pokémon 2</label
-          >
-          <span class="switch-thumb"></span>
         </div>
       </div>
 
       <div id="container" class="containers">
-        <button id="createSection">Añadir Pokemon</button>
+        <!-- <button id="createSection">Añadir Pokemon</button> -->
       </div>
     </div>
-
-    <!-- <script>
-        const radios = document.querySelectorAll('input[name="pokemon-choice"]');
-        let opcionSeleccionada = 'pokemon1';
-
-        radios.forEach(radio => {
-            radio.addEventListener('change', () => {
-                if (radio.checked) {
-                    opcionSeleccionada = radio.value;
-                    console.log('Opción seleccionada:', opcionSeleccionada);
-                }
-            });
-        });
-
-        const botonBuscar = document.querySelector('.search-bar button');
-        const inputBuscar = document.querySelector('.search-bar input');
-
-        botonBuscar.addEventListener('click', () => {
-            const texto = inputBuscar.value;
-            console.log('Búsqueda:', texto);
-            console.log('Estado actual del switch:', opcionSeleccionada);
-        });
-    </script> -->
 
     <script src="../static/script.js"></script>
   </body>

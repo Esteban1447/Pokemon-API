@@ -32,22 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let pokemonSelect = "pokemon1";
   let selector = "1";
-
   let pokemonList = [];
 
-  let sections = [];
-
-  let contador = 0;
-
   async function loadPokemons() {
-    const responce = await fetch(
-      "https://pokeapi.co/api/v2/pokemon?limit=2000",
-    );
-
-    const data = await responce.json();
+    const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=2000");
+    const data = await response.json();
 
     pokemonList = data.results.map((pokemon) => pokemon.name);
-    console.log("Pokemones cargados:", pokemonList.length);
   }
 
   loadPokemons();
@@ -56,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
     radio.addEventListener("change", () => {
       if (radio.checked) {
         pokemonSelect = radio.value;
-        console.log("Opción seleccionada:", pokemonSelect);
       }
       pokemonSe(pokemonSelect);
     });
@@ -81,9 +71,9 @@ document.addEventListener("DOMContentLoaded", () => {
       opcion.addEventListener("click", () => {
         pokemon.value = name;
         suggest.innerHTML = "";
-
         bton.click();
       });
+
       suggest.appendChild(opcion);
     });
   });
@@ -91,75 +81,66 @@ document.addEventListener("DOMContentLoaded", () => {
   function createPokememonSection() {
     const section = document.createElement("div");
     section.id = `section${c}`;
+    section.classList.add("pokemon-card", selector === "2" ? "red-card" : "blue-card");
     container.appendChild(section);
-    sections.push(`section${c}`);
-    console.log(sections);
 
     return section;
   }
+
   function getFreeSection() {
     const freeSection = [...container.children].find(
-      (section) => section.children.length === 0,
+      (section) => section.children.length === 0 && section.id.startsWith("section")
     );
 
     return freeSection || createPokememonSection();
   }
-  createPokemon.addEventListener("click", () => {
-    c += 1;
-    createPokememonSection();
-  });
+
+  // createPokemon.addEventListener("click", () => {
+  //   c += 1;
+  //   createPokememonSection();
+  // });
 
   function pokemonSe(pokemonSelect) {
     selector = pokemonSelect === "pokemon1" ? "1" : "2";
   }
 
-  bton.addEventListener("click", async (e, p) => {
+  bton.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    let nameP = String(pokemon.value);
-    let pokemons = {
-      name: nameP,
-    };
-    if (nameP == "") {
+    const nameP = String(pokemon.value);
+    const pokemons = { name: nameP };
+
+    if (nameP === "") {
       return;
     }
 
     const section = getFreeSection();
 
     if (cache[nameP]) {
-      console.log("Datos obtenidos de la caché.");
       showData(cache[nameP], section);
-
       return;
     }
 
     try {
-      const responce = await fetch("/procesar", {
+      const response = await fetch("/procesar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          pokemons,
-        }),
+        body: JSON.stringify({ pokemons }),
       });
 
-      const data = await responce.json();
-
+      const data = await response.json();
       const datos = data.pokemon;
 
       cache[nameP] = datos;
-
-      console.log(cache);
-
       showData(datos, section);
     } catch (error) {
-      console.error(error);
+      return;
     }
   });
 
-  function showData(datos, sections) {
-    const section = sections;
+  function showData(datos, section) {
     let stat = [];
 
     if (section.children.length > 0) {
@@ -173,137 +154,115 @@ document.addEventListener("DOMContentLoaded", () => {
       const etiqueta = traducciones[key] || key;
       const value = datos[key];
 
-      //=========================
-      // IMAGEN
-      //=========================
-
       if (key === "url_imagen") {
         const image = document.createElement("img");
-
         image.className = "pokemon-image";
-
         image.src = value;
-
         image.alt = `${datos.name} image`;
-
         section.appendChild(image);
-
         return;
       }
 
       const text = document.createElement("span");
 
-      //=========================
-      // SI ES UN ARREGLO
-      //=========================
-
       if (Array.isArray(value)) {
-        // Habilidades
         if (key === "abilities") {
           const skillsList = document.createElement("ul");
-
           skillsList.className = "abilities-list";
 
           datos.abilities.forEach((ability, i) => {
             const item = document.createElement("li");
-
             item.className = "ability-item";
-
             item.textContent = `Habilidad ${i + 1}: ${ability.name.charAt(0).toUpperCase() + ability.name.slice(1)} ${ability.is_hidden ? "(hidden)" : ""}`;
-
             skillsList.appendChild(item);
           });
 
           section.appendChild(skillsList);
-
           return;
         }
 
-        // Estadísticas
         if (key === "stats") {
           const statsList = document.createElement("ul");
-
           statsList.className = "stats-list";
 
           datos.stats.forEach((stats) => {
             const item = document.createElement("li");
-
             item.className = "stats-item";
-
             item.textContent = `${stats.name.charAt(0).toUpperCase() + stats.name.slice(1)}: ${stats.base_stat}`;
 
             stat.push({
               name: stats.name,
               stat: stats.base_stat,
             });
-            console.log(stat);
 
             statsList.appendChild(item);
           });
 
           section.appendChild(statsList);
-
           return;
         }
 
-        // Tipos
         text.textContent = `${etiqueta}: ${value.join(", ")}`;
       } else {
-        // Datos normales
         text.textContent = `${etiqueta}: ${value}`;
       }
+
       section.appendChild(text);
     });
-    
-    pokemonSave[selector] = stat;
-    idb = stat[0]
+
+    const idb = Date.now();
+
+    pokemonSave[idb] = {
+      idb: idb,
+      name: datos.name,
+      id: datos.id,
+      stat: stat,
+    };
+
     btonComparate.addEventListener("click", comparatePokemons);
 
-    console.log(pokemonSave);
     const deleteBton = document.createElement("button");
     deleteBton.textContent = "Delete";
-    const currentSelector = selector;
-    deletePokemon(deleteBton, section, currentSelector);
+
+    deletePokemon(deleteBton, section, idb);
     section.appendChild(deleteBton);
     c += 1;
   }
 
-  function deletePokemon(deleteBton, section, currentSelector, idb) {
-
+  function deletePokemon(deleteBton, section, idb) {
     deleteBton.addEventListener("click", () => {
       section.innerHTML = "";
-      delete pokemonSave[currentSelector];
-      pokemonSave.splice[idb,1]
+      delete pokemonSave[idb];
+      pokemonSave.splice[(idb, 1)];
     });
   }
 
   function comparatePokemons() {
-    let countP1 = 0;
-    let countP2 = 0;
-    if (!pokemonSave[1] || !pokemonSave[2]) {
+    const pokemons = Object.values(pokemonSave);
+
+    if (pokemons.length < 2) {
+      alert("Necesitas al menos 2 Pokémon para comparar.");
       return;
     }
-    pokemonSave[1].forEach((pokemon, index) => {
-      const stat1 = pokemon.stat;
-      const stat2 = pokemonSave[2][index].stat;
 
-      if (stat1 > stat2) {
-        console.log(`${pokemon.name}: gana el primero`);
-        countP1 += 1;
-      } else if (stat2 > stat1) {
-        console.log(`${pokemon.name}: gana el segundo`);
-        countP2 += 1;
-      } else {
-        console.log(`${pokemon.name}: empate`);
-      }
-      console.log(countP1, " ", countP2);
+    const resultados = pokemons.map((pokemon) => {
+      const total = pokemon.stat.reduce((suma, stat) => {
+        return suma + stat.stat;
+      }, 0);
+
+      return {
+        ...pokemon,
+        total,
+      };
     });
-    if (countP1 > countP2) {
-      alert(`Gna el primero`);
-    } else if (countP2 > countP1) {
-      alert(`Gana el segundo`);
-    } else {
-      alert("Empate");
-    }
+
+    const ganador = resultados.reduce((mejor, pokemon) => {
+      return pokemon.total > mejor.total ? pokemon : mejor;
+    });
+
+    alert(
+      `🏆 Ganador: ${ganador.name}\n` +
+      `Puntaje total: ${ganador.total}`
+    );
   }
 });
