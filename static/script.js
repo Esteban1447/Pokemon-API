@@ -53,6 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   pokemon.addEventListener("input", () => {
+        setTimeout(() => {
+        console.log("Pasaron 3 segundos");
     const texto = pokemon.value.toLowerCase().trim();
 
     suggest.innerHTML = "";
@@ -120,7 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
       showData(cache[nameP], section);
       return;
     }
-
+    setTimeout(() => {
+        bton.disabled = false;
+    }, 3000); // 3 segundos en 
     try {
       const response = await fetch("/procesar", {
         method: "POST",
