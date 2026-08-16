@@ -53,31 +53,32 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   pokemon.addEventListener("input", () => {
-        setTimeout(() => {
-        console.log("Pasaron 3 segundos");
-    const texto = pokemon.value.toLowerCase().trim();
+    setTimeout(() => {
+      console.log("Pasaron 3 segundos");
+      const texto = pokemon.value.toLowerCase().trim();
 
-    suggest.innerHTML = "";
+      suggest.innerHTML = "";
 
-    if (!texto) return;
+      if (!texto) return;
 
-    const found = pokemonList
-      .filter((name) => name.startsWith(texto))
-      .slice(0, 5);
+      const found = pokemonList
+        .filter((name) => name.startsWith(texto))
+        .slice(0, 5);
 
-    found.forEach((name) => {
-      const opcion = document.createElement("div");
-      opcion.className = "opcion";
-      opcion.textContent = name;
+      found.forEach((name) => {
+        const opcion = document.createElement("div");
+        opcion.className = "opcion";
+        opcion.textContent = name;
 
-      opcion.addEventListener("click", () => {
-        pokemon.value = name;
-        suggest.innerHTML = "";
-        bton.click();
+        opcion.addEventListener("click", () => {
+          pokemon.value = name;
+          suggest.innerHTML = "";
+          bton.click();
+        });
+
+        suggest.appendChild(opcion);
       });
-
-      suggest.appendChild(opcion);
-    });
+    }, 3000);
   });
 
   function createPokememonSection() {
