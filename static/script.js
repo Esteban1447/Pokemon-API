@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const orden = [
     "url_imagen",
-    "name",
+        "name",
     "id",
     "types",
     "height",
@@ -21,6 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
     "abilities",
     "stats",
   ];
+
+  // Habilita el botón de nuevo tras 3 segundos (sin alterar la lógica existente)
+  function releaseButtonAfterDelay() {
+    setTimeout(() => {
+      bton.disabled = false;
+    }, 3000);
+  }
+
 
   const traducciones = {
     name: "Nombre",
@@ -53,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   pokemon.addEventListener("input", () => {
-    setTimeout(() => {
+
       console.log("Pasaron 3 segundos");
       const texto = pokemon.value.toLowerCase().trim();
 
@@ -78,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         suggest.appendChild(opcion);
       });
-    }, 3000);
   });
 
   function createPokememonSection() {
@@ -110,10 +117,14 @@ document.addEventListener("DOMContentLoaded", () => {
   bton.addEventListener("click", async (e) => {
     e.preventDefault();
 
+    bton.disabled = true; // 🔒 Bloquea el botón inmediatamente
+
     const nameP = String(pokemon.value);
     const pokemons = { name: nameP };
 
     if (nameP === "") {
+      // Mantener bloqueo 3 segundos antes de devolver el control
+      releaseButtonAfterDelay();
       return;
     }
 
@@ -121,11 +132,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (cache[nameP]) {
       showData(cache[nameP], section);
+      // Mantener bloqueo 3 segundos incluso si viene de la caché
+      releaseButtonAfterDelay();
       return;
     }
-    setTimeout(() => {
-        bton.disabled = false;
-    }, 3000); // 3 segundos en 
+
     try {
       const response = await fetch("/procesar", {
         method: "POST",
@@ -140,8 +151,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       cache[nameP] = datos;
       showData(datos, section);
+
     } catch (error) {
-      return;
+      console.error(error);
+
+    } finally {
+      // Siempre esperar 3 segundos antes de volver a habilitarlo
+      releaseButtonAfterDelay();
     }
   });
 
